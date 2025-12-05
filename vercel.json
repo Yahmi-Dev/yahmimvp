@@ -4,10 +4,11 @@
   "installCommand": "npm install && npx prisma generate",
   "outputDirectory": "dist",
   "functions": {
-    "api/**/*.ts": {
+    "api/[...path].ts": {
       "runtime": "nodejs20.x",
       "memory": 1024,
-      "maxDuration": 30
+      "maxDuration": 30,
+      "includeFiles": "src/lib/**"
     }
   },
   "rewrites": [
@@ -15,11 +16,5 @@
       "source": "/api/:path*",
       "destination": "/api/[...path]"
     }
-  ],
-  "env": {
-    "DATABASE_URL": "@database_url",
-    "JWT_SECRET": "@jwt_secret",
-    "GROQ_API_KEY": "@groq_api_key",
-    "OPENROUTER_API_KEY": "@openrouter_api_key"
-  }
+  ]
 }

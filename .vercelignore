@@ -37,3 +37,6 @@ coverage
 # Git
 .git
 .gitignore
+
+# Server directory (not needed for serverless functions)
+server/
