@@ -1,0 +1,165 @@
+// Yahmi - Neon PostgreSQL Schema
+// Enterprise Sustainability Platform
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  passwordHash  String
+  displayName   String?
+  companyName   String?
+  industry      String?
+  companySize   String?  @default("medium")
+  role          String?
+  
+  // Company context for personalized assessments
+  regions       String[]
+  facilitiesCount Int?
+  revenueUSD    Float?
+  productionUnits Float?
+  
+  // Supplier & product data
+  suppliersCount Int?
+  primaryDataShare Float?
+  productsCount  Int?
+  bomAvailable   Boolean @default(false)
+  
+  // Targets & planning
+  internalCarbonPrice Float?
+  sbtiCommitted Boolean @default(false)
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  assessments   Assessment[]
+  reports       Report[]
+  deepAnalytics DeepAnalytics[]
+  snapshots     DashboardSnapshot[]
+  sessions      Session[]
+  
+  @@index([email])
+}
+
+model Assessment {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  industry    String
+  responses   Json     // Questionnaire responses
+  
+  carbonScore Int
+  esgScore    Int
+  
+  completedAt DateTime @default(now())
+  
+  reports     Report[]
+  
+  @@index([userId])
+  @@index([completedAt])
+}
+
+model Report {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  assessmentId    String
+  assessment      Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  
+  carbonFootprint Int
+  esgScore        Int
+  
+  // AI-generated analysis
+  aiReport        Json     // Full AI report with detailed analysis
+  recommendations String[]
+  
+  // Category scores
+  environmentalScore Int?
+  socialScore        Int?
+  governanceScore    Int?
+  
+  // Risk & compliance
+  riskLevel          String?
+  benchmarkPosition  String?
+  complianceGaps     String[]
+  
+  // Strategic planning
+  quickWins          String[]
+  longTermGoals      String[]
+  
+  generatedAt     DateTime @default(now())
+  
+  deepAnalytics   DeepAnalytics[]
+  snapshots       DashboardSnapshot[]
+  
+  @@index([userId])
+  @@index([generatedAt])
+}
+
+model DeepAnalytics {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  reportId        String?
+  report          Report?  @relation(fields: [reportId], references: [id], onDelete: SetNull)
+  
+  // Enterprise-grade analytics payload
+  deepReport      Json     // EnterpriseDeepReport structure
+  
+  // Key metrics for quick access
+  scope1Emissions  Float?
+  scope2Emissions  Float?
+  scope3Emissions  Float?
+  
+  intensityPerUnit    Float?
+  intensityPerRevenue Float?
+  
+  renewablesShare     Float?
+  circularityScore    Float?
+  engagementIndex     Float?
+  
+  generatedAt     DateTime @default(now())
+  
+  @@index([userId])
+  @@index([generatedAt])
+}
+
+model DashboardSnapshot {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  reportId        String?
+  report          Report?  @relation(fields: [reportId], references: [id], onDelete: SetNull)
+  
+  // Cached metrics for fast dashboard load
+  metrics         Json
+  
+  generatedAt     DateTime @default(now())
+  
+  @@index([userId])
+  @@index([generatedAt])
+}
+
+// Session management for auth
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  
+  @@index([token])
+  @@index([userId])
+}
