@@ -1,7 +1,9 @@
 // Yahmi API Client - Frontend
-// In production, API is served from same domain under /api
-const API_BASE = import.meta.env.VITE_API_URL || 
-  (import.meta.env.PROD ? '' : 'http://localhost:3001');
+// In production on Vercel, API is served from same domain under /api
+// In development, connect to local Express server
+const API_BASE = import.meta.env.PROD 
+  ? '' // Production: same domain, routes start with /api
+  : (import.meta.env.VITE_API_URL || 'http://localhost:3001'); // Development: local server
 
 class APIClient {
   private token: string | null = null;

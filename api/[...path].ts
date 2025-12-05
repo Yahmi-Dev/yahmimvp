@@ -175,7 +175,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           assessmentId,
           carbonFootprint: aiReport.score,
           esgScore: aiReport.score,
-          aiReport,
+          aiReport: aiReport as any,
           recommendations: aiReport.suggestions,
           environmentalScore: aiReport.environmentalScore,
           socialScore: aiReport.socialScore,

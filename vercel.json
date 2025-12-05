@@ -15,5 +15,11 @@
       "source": "/api/:path*",
       "destination": "/api/[...path]"
     }
-  ]
+  ],
+  "env": {
+    "DATABASE_URL": "@database_url",
+    "JWT_SECRET": "@jwt_secret",
+    "GROQ_API_KEY": "@groq_api_key",
+    "OPENROUTER_API_KEY": "@openrouter_api_key"
+  }
 }

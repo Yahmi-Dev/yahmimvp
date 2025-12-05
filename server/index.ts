@@ -40,7 +40,7 @@ const corsOptions = {
     if (!origin) return callback(null, true);
     
     const allowedOrigins = isProduction 
-      ? [env.VITE_API_URL, 'https://yahmi.vercel.app'].filter(Boolean)
+      ? [env.VITE_API_URL, 'https://yahmimvp.vercel.app', 'https://yahmi.vercel.app'].filter(Boolean)
       : ['http://localhost:5173', 'http://localhost:3000', 'http://localhost:5174'];
     
     if (allowedOrigins.some(allowed => origin.startsWith(allowed))) {
@@ -301,7 +301,7 @@ app.post('/api/report/generate', requireAuth, async (req: any, res) => {
         assessmentId,
         carbonFootprint: aiReport.score,
         esgScore: aiReport.score,
-        aiReport,
+        aiReport: aiReport as any,
         recommendations: aiReport.suggestions,
         environmentalScore: aiReport.environmentalScore,
         socialScore: aiReport.socialScore,
@@ -367,7 +367,7 @@ app.post('/api/analytics/deep', requireAuth, async (req: any, res) => {
       data: {
         userId: req.user.id,
         reportId,
-        deepReport,
+        deepReport: deepReport as any,
         scope1Emissions: deepReport.emissions?.scope1,
         scope2Emissions: deepReport.emissions?.scope2,
         scope3Emissions: deepReport.emissions?.scope3,
