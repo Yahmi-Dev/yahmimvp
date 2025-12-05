@@ -1,8 +1,8 @@
 // Vercel Serverless API Handler
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { prisma } from '../src/lib/db.js';
-import * as auth from '../src/lib/auth.js';
-import * as ai from '../src/lib/ai-vercel.js';
+import { prisma } from '../src/lib/db';
+import * as auth from '../src/lib/auth';
+import * as ai from '../src/lib/ai-vercel';
 
 // Helper to parse request body
 async function parseBody(req: VercelRequest): Promise<any> {

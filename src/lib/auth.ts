@@ -1,5 +1,5 @@
 // Authentication Utilities - Neon-based
-import { prisma } from './db.js';
+import { prisma } from './db';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 

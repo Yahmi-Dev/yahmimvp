@@ -2,9 +2,9 @@
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
-import { prisma, testConnection, healthCheck } from '../src/lib/db.js';
-import * as auth from '../src/lib/auth.js';
-import * as ai from '../src/lib/ai-vercel.js';
+import { prisma, testConnection, healthCheck } from '../src/lib/db';
+import * as auth from '../src/lib/auth';
+import * as ai from '../src/lib/ai-vercel';
 
 // Environment validation - with fallback for development
 let env: any;
@@ -13,7 +13,7 @@ let isDevelopment: boolean;
 let sanitizeForLog: any;
 
 try {
-  const envModule = await import('../src/lib/env.js');
+  const envModule = await import('../src/lib/env');
   env = envModule.env;
   isProduction = envModule.isProduction;
   isDevelopment = envModule.isDevelopment;
