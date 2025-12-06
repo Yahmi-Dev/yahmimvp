@@ -1,8 +1,8 @@
 // Vercel Serverless API Handler
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { prisma } from './db';
-import * as auth from './auth';
-import * as ai from './ai-vercel';
+import { prisma } from '../src/lib/db';
+import * as auth from '../src/lib/auth';
+import * as ai from '../src/lib/ai-vercel';
 
 // Helper to parse request body
 async function parseBody(req: VercelRequest): Promise<any> {
@@ -49,7 +49,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const { method, url } = req;
   const path = url?.replace('/api', '') || '/';
 
+  // Log request for debugging (only in development)
+  if (process.env.NODE_ENV !== 'production') {
+    console.log(`[API] ${method} ${path}`);
+  }
+
   try {
+    // Test database connection on first request
+    await prisma.$connect();
     // Health check
     if (path === '/health' && method === 'GET') {
       return res.status(200).json({ 
