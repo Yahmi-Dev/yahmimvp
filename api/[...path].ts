@@ -1,8 +1,8 @@
 // Vercel Serverless API Handler
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { prisma } from './_lib/db';
-import * as auth from './_lib/auth';
-import * as ai from './_lib/ai-vercel';
+import { prisma } from './_lib/db.js';
+import * as auth from './_lib/auth.js';
+import * as ai from './_lib/ai-vercel.js';
 
 // Helper to parse request body
 async function parseBody(req: VercelRequest): Promise<any> {
@@ -57,13 +57,29 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    // Test database connection on first request
-    await prisma.$connect();
-    // Health check
+    // Health check (no DB required)
     if (path === '/health' && method === 'GET') {
       return res.status(200).json({ 
         status: 'ok', 
-        timestamp: new Date().toISOString() 
+        timestamp: new Date().toISOString(),
+        env: {
+          hasDatabase: !!process.env.DATABASE_URL,
+          hasJWT: !!process.env.JWT_SECRET,
+          hasGroq: !!process.env.GROQ_API_KEY,
+          nodeEnv: process.env.NODE_ENV
+        }
+      });
+    }
+
+    // Test database connection for other routes
+    try {
+      await prisma.$connect();
+      console.log('✅ Database connected');
+    } catch (dbError: any) {
+      console.error('❌ Database connection failed:', dbError.message);
+      return res.status(500).json({ 
+        error: 'Database connection failed',
+        details: dbError.message 
       });
     }
 
@@ -253,8 +269,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   } catch (error: any) {
     console.error('API Error:', error);
+    console.error('Stack:', error.stack);
     return res.status(500).json({ 
-      error: error.message || 'Internal server error' 
+      error: error.message || 'Internal server error',
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
+      path,
+      method
     });
   }
 }
