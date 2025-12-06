@@ -1,7 +1,6 @@
 {
   "version": 2,
-  "buildCommand": "npm run build",
-  "installCommand": "npm install && npx prisma generate",
+  "buildCommand": "npm run vercel-build",
   "outputDirectory": "dist",
   "functions": {
     "api/**/*.ts": {
